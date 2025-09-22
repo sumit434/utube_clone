@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connection Test</title>
+</head>
+<body>
+    <h1>Testing Backend Connection</h1>
+    <button onclick="testConnection()">Test Connection</button>
+    <p id="status-message"></p>
+
+    <script>
+        async function testConnection() {
+            const statusMessage = document.getElementById('status-message');
+            statusMessage.textContent = 'Connecting...';
+
+            try {
+                const response = await fetch('http://localhost:8000/test');
+                if (response.ok) {
+                    const message = await response.text();
+                    statusMessage.textContent = `Success: ${message}`;
+                    statusMessage.style.color = 'green';
+                } else {
+                    statusMessage.textContent = `Error: ${response.status} ${response.statusText}`;
+                    statusMessage.style.color = 'red';
+                }
+            } catch (error) {
+                statusMessage.textContent = `Failed to fetch: ${error.message}`;
+                statusMessage.style.color = 'red';
+            }
+        }
+    </script>
+</body>
+</html>

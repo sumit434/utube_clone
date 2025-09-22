@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Search, Menu, Video, ChevronDown, User, LogOut, Settings } from "lucide-react"; 
 import { useAuth } from "../context/AuthContext";
+import api from "../utils/axios.js";
 
 export default function Navbar({ onToggle }) {
   const navigate = useNavigate();
@@ -72,14 +73,14 @@ export default function Navbar({ onToggle }) {
     setDropdownOpen(false);
   };
 
-  const handleProfileClick = () => {
-    if (user?.channelId) {
-      navigate(`/channel/${user.channelId}`);
-    } else {
-      navigate("/channel/create");
-    }
-    setDropdownOpen(false);
-  };
+const handleProfileClick = () => {
+  if (user?.channelId) {
+    navigate(`/channel/${user.channelId}`);
+  } else {
+    navigate("/channel/create"); 
+  }
+  setDropdownOpen(false);
+};
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 flex items-center bg-neutral-100 justify-between px-4 py-2">
@@ -137,12 +138,12 @@ export default function Navbar({ onToggle }) {
                 <Video size={22} />
               </button>
             ) : (
-              <button
-                onClick={() => navigate("/create-channel")}
-                className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
-              >
-                Create Channel
-              </button>
+            <button
+              onClick={() => navigate("/channel/create")} 
+              className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
+            >
+              Create Channel
+            </button>
             )}
 
             {/* Avatar + Dropdown */}

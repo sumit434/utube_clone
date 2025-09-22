@@ -6,17 +6,25 @@ import ErrorResponse from "../utils/errorResponse.js";
 // @desc      Create new channel
 // @route     POST /api/v1/channels
 // @access    Private
-export const createChannel = asyncHandler(async (req, res, next) => {
-  const userId = req.user.id;
+export const createChannel = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
 
-  const existingChannel = await Channel.findOne({ userId });
-  if (existingChannel) {
-    return next(new ErrorResponse("User already has a channel", 400));
+    // Create a new channel with the userId
+    const channel = await Channel.create({ ...req.body, userId });
+
+    // Update the user to reference the new channel
+    await User.findByIdAndUpdate(userId, { channelId: channel._id });
+
+    // Return success response with the created channel
+    res.status(201).json({
+      success: true,
+      channel,
+    });
+  } catch (err) {
+    next(err); // Pass error to global error handler
   }
-  const channel = await Channel.create({ ...req.body, userId });
-  await User.findByIdAndUpdate(userId, { channelId: channel._id });
-  res.status(201).json({ success: true, channel });
-})
+};
 
 // ... (rest of the controller functions)
 // @desc    Get a channel by ID

@@ -22,6 +22,11 @@ export const AuthProvider = ({ children }) => {
       username
     )}`;
 
+
+  const updateUser = (updatedFields) => {
+    setUser((prev) => ({ ...prev, ...updatedFields }));
+  };
+
   const loadUser = async () => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -30,7 +35,6 @@ export const AuthProvider = ({ children }) => {
         const res = await api.get("/auth/me");
         const userData = res.data.user;
         if (userData && !userData.avatar) {
-
           setUser({
             ...userData,
             avatar: generateAvatar(userData.username || userData.name),
@@ -60,7 +64,6 @@ export const AuthProvider = ({ children }) => {
     setAuthToken(res.data.token);
     const userData = res.data.user;
     if (userData && !userData.avatar) {
- 
       setUser({
         ...userData,
         avatar: generateAvatar(userData.username || userData.name),
@@ -76,7 +79,6 @@ export const AuthProvider = ({ children }) => {
     setAuthToken(res.data.token);
     const userData = res.data.user;
     if (userData && !userData.avatar) {
-
       setUser({
         ...userData,
         avatar: generateAvatar(userData.username || userData.name),
@@ -93,7 +95,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signup, login, logout }}>
+ 
+    <AuthContext.Provider value={{ user, loading, signup, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

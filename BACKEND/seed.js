@@ -1,78 +1,83 @@
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import Video from './models/Video.js'; // Adjust the path to your Video model
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import path from "path";
 
-dotenv.config({ path: './.env' });
+import User from "./models/User.js";
+import Channel from "./models/Channels.js";
+import Video from "./models/Video.js";
 
-// Function to connect to the database (you'll need to define this)
+import sampleUsers from "./utils/sampleUsers.js";
+import sampleChannels from "./utils/sampleChannels.js";
+import sampleVideos from "./utils/sampleVideos.js";
+
+dotenv.config({ path: path.resolve("./config/.env") });
+
 const connectDB = async () => {
-    try {
-        const conn = await mongoose.connect(process.env.MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
-        console.log(`MongoDB Connected: ${conn.connection.host}`);
-    } catch (err) {
-        console.error(`Error: ${err.message}`);
-        process.exit(1);
-    }
+  try {
+    const conn = await mongoose.connect(
+      process.env.MONGO_URI || "mongodb://127.0.0.1:27017/youtube_clone"
+    );
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (err) {
+    console.error(`Error: ${err.message}`);
+    process.exit(1);
+  }
 };
 
-// ✅ FIX: Added a valid `_id` for the video and ensured a valid `channelId`
-const sampleVideos = [
-    {
-        "_id": "68c1b0ab2d163fcf488fc91b", // This is the ID from your URL. We are ensuring it exists in the database.
-        "videoId": "video01",
-        "title": "Learn React in 30 Minutes",
-        "thumbnailUrl": "https://placehold.co/400x225/E53E3E/FFFFFF?text=React", 
-        "description": "A quick tutorial to get started with React.",
-        "channel": "68c0179f12853cbacbc576cf", // Ensure this is a valid Channel ID
-        "uploader": "user01",
-        "views": 15200,
-        "likes": 1023,
-        "dislikes": 45,
-        "uploadDate": "2024-09-20",
-        "comments": [
-            {
-                "commentId": "comment01",
-                "userId": "user02",
-                "text": "Great video! Very helpful.",
-                "timestamp": "2024-09-21T08:30:00Z"
-            }
-        ]
-    }
-];
-
 const importData = async () => {
-    try {
-        await connectDB();
-        await Video.deleteMany();
-        await Video.insertMany(sampleVideos);
-        console.log('Data Imported!');
-        process.exit();
-    } catch (err) {
-        console.error(err);
-        process.exit(1);
-    }
+  try {
+    await connectDB();
+
+    // Wipe collections
+    await User.deleteMany();
+    await Channel.deleteMany();
+    await Video.deleteMany();
+
+    // Insert users
+    const users = await User.insertMany(sampleUsers);
+
+    // Insert channels linked to users
+    const channelsWithUsers = sampleChannels.map((channel, idx) => ({
+      ...channel,
+      userId: users[idx]._id,
+    }));
+    const channels = await Channel.insertMany(channelsWithUsers);
+
+    // Insert videos linked to channels
+    const videosWithChannels = sampleVideos.map((video, idx) => ({
+      ...video,
+      channel: channels[idx % channels.length]._id,
+      channelId: channels[idx % channels.length]._id,
+    }));
+    await Video.insertMany(videosWithChannels);
+
+    console.log("✅ Database seeded successfully!");
+    process.exit();
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
 };
 
 const deleteData = async () => {
-    try {
-        await connectDB();
-        await Video.deleteMany();
-        console.log('Data Destroyed!');
-        process.exit();
-    } catch (err) {
-        console.error(err);
-        process.exit(1);
-    }
+  try {
+    await connectDB();
+    await User.deleteMany();
+    await Channel.deleteMany();
+    await Video.deleteMany();
+    console.log("🗑️ Database destroyed!");
+    process.exit();
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
 };
 
-if (process.argv[2] === '-i') {
-    importData();
-} else if (process.argv[2] === '-d') {
-    deleteData();
+if (process.argv[2] === "-i") {
+  importData();
+} else if (process.argv[2] === "-d") {
+  deleteData();
 } else {
-    console.log("To import data, run 'node seed.js -i'");
-    console.log("To delete data, run 'node seed.js -d'");
+  console.log("👉 To import data, run: node seed.js -i");
+  console.log("👉 To delete data, run: node seed.js -d");
 }

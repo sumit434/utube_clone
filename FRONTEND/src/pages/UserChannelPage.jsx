@@ -5,7 +5,7 @@ import api from "../utils/axios.js";
 
 export default function UserChannelPage() {
   const navigate = useNavigate();
-  const { user, updateUser } = useAuth(); 
+  const { user, updateUser } = useAuth();
 
   const [form, setForm] = useState({ channelName: "", description: "" });
   const [alertMessage, setAlertMessage] = useState("");
@@ -28,18 +28,14 @@ export default function UserChannelPage() {
       navigate("/"); 
     } catch (error) {
       console.error(error);
-      setAlertMessage(
-        error.response?.data?.message || "Something went wrong"
-      );
+      setAlertMessage(error.response?.data?.message || "Something went wrong");
     }
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
       <div className="bg-white shadow-lg rounded-xl p-6 w-96">
-        <h2 className="text-2xl font-bold mb-4 text-center">
-          Create Your Channel
-        </h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">Create Your Channel</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"

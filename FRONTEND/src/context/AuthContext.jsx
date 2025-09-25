@@ -22,11 +22,6 @@ export const AuthProvider = ({ children }) => {
       username
     )}`;
 
-
-  const updateUser = (updatedFields) => {
-    setUser((prev) => ({ ...prev, ...updatedFields }));
-  };
-
   const loadUser = async () => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -94,9 +89,14 @@ export const AuthProvider = ({ children }) => {
     setAuthToken(null);
   };
 
+  const updateUser = (updates) => {
+    setUser((prev) => (prev ? { ...prev, ...updates } : prev));
+  };
+
   return (
- 
-    <AuthContext.Provider value={{ user, loading, signup, login, logout, updateUser }}>
+    <AuthContext.Provider
+      value={{ user, loading, signup, login, logout, updateUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

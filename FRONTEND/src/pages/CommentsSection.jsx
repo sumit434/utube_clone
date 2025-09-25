@@ -39,7 +39,7 @@ export default function CommentsSection() {
 
   const handleAuthRedirect = (e) => {
     e.preventDefault();
-    navigate("/signup"); // or "/login" if you prefer
+    navigate("/signup"); 
   };
 
   return (
@@ -47,7 +47,7 @@ export default function CommentsSection() {
       <h2 className="text-xl font-bold mb-4">Comments</h2>
 
       {/* Comment input form */}
-      <form
+<form
   onSubmit={user ? handlePostComment : handleAuthRedirect}
   className="flex gap-4 items-center mb-6"
 >
@@ -58,11 +58,10 @@ export default function CommentsSection() {
     placeholder={
       user ? "Add a comment..." : "Sign in to leave a comment..."
     }
-    disabled={!user}
     className={`flex-1 p-2 rounded-full border ${
       user
         ? "border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        : "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed"
+        : "border-gray-200 focus:outline-none"
     }`}
   />
   <button
@@ -76,6 +75,7 @@ export default function CommentsSection() {
     Comment
   </button>
 </form>
+
 
       {/* Comment list */}
       <div className="flex flex-col">

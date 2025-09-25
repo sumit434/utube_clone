@@ -33,7 +33,6 @@ export default function VideoPage() {
         setCurrentVideo(videoData || null);
 
         if (videoData) {
-          // Fetch like/dislike counts
           try {
             const countsRes = await api.get(
               `/likes_dislikes/${videoData._id}/counts`
@@ -43,8 +42,6 @@ export default function VideoPage() {
           } catch (err) {
             console.warn("Failed to fetch reaction counts:", err);
           }
-
-          // Fetch user reaction if logged in
           if (user) {
             try {
               const userReactionRes = await api.get(
@@ -55,8 +52,6 @@ export default function VideoPage() {
               console.warn("Failed to fetch user reaction:", err);
             }
           }
-
-          // Fetch related videos
           if (videoData.channelId) {
             const relatedRes = await api.get(
               `/videos/${videoData.channelId}/videos`
@@ -186,7 +181,7 @@ export default function VideoPage() {
           </div>
         </div>
 
-        {/* ✅ Use CommentsSection here */}
+        {/* CommentsSection */}
         <CommentsSection />
       </div>
 
